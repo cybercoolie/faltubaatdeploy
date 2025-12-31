@@ -12,17 +12,17 @@ AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-YOUR_ACCOUNT_ID}"
 CLUSTER_NAME="faltubaat-cluster"
 SERVICE_NAME="faltubaat-multi-service"
 
-echo "ðŸš€ Deploying FaltuBaat Multi-Container to ECS..."
+echo "[INFO] Deploying FaltuBaat Multi-Container to ECS..."
 
 # Navigate to project root
 cd "$(dirname "$0")/../../.."
 
 # 1. Login to ECR
-echo "ðŸ“¦ Logging into ECR..."
+echo "[INFO] Logging into ECR..."
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # 2. Build Docker images
-echo "ðŸ”¨ Building Docker images..."
+echo "[INFO] Building Docker images..."
 
 # Build chat-app image
 echo "  Building chat-app..."
@@ -33,23 +33,23 @@ echo "  Building nginx-rtmp..."
 docker build -t faltubaat-nginx-rtmp -f deploy/docker/multi-container/Dockerfile.nginx-rtmp deploy/docker/multi-container/
 
 # 3. Tag images for ECR
-echo "ðŸ·ï¸ Tagging images..."
+echo "[INFO] Tagging images..."
 docker tag faltubaat-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/faltubaat-app:latest
 docker tag faltubaat-nginx-rtmp:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/faltubaat-nginx-rtmp:latest
 
 # 4. Push to ECR
-echo "â¬†ï¸ Pushing to ECR..."
+echo "[INFO] Pushing to ECR..."
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/faltubaat-app:latest
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/faltubaat-nginx-rtmp:latest
 
 # 5. Register new task definition
-echo "ðŸ“ Registering task definition..."
+echo "[INFO] Registering task definition..."
 aws ecs register-task-definition \
     --cli-input-json file://deploy/ecs/multi-container/task-definition.json \
     --region $AWS_REGION
 
 # 6. Update service to use new task definition
-echo "ðŸ”„ Updating ECS service..."
+echo "[INFO] Updating ECS service..."
 aws ecs update-service \
     --cluster $CLUSTER_NAME \
     --service $SERVICE_NAME \
@@ -58,15 +58,15 @@ aws ecs update-service \
     --region $AWS_REGION
 
 echo ""
-echo "âœ… Multi-container deployment initiated successfully!"
+echo "[OK] Multi-container deployment initiated successfully!"
 echo ""
-echo "ðŸ³ Containers deployed:"
-echo "  chat-app      â†’ Node.js Chat Application"
-echo "  nginx-rtmp    â†’ Nginx RTMP/HLS Streaming"
+echo "[INFO] Containers deployed:"
+echo "  chat-app      -> Node.js Chat Application"
+echo "  nginx-rtmp    -> Nginx RTMP/HLS Streaming"
 echo ""
-echo "ðŸ“Š Monitor deployment:"
+echo "[INFO] Monitor deployment:"
 echo "  aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --region $AWS_REGION"
 echo ""
-echo "ðŸ“‹ View logs:"
+echo "[INFO] View logs:"
 echo "  Chat App:   aws logs tail /ecs/faltubaat/chat-app --follow --region $AWS_REGION"
 echo "  Nginx RTMP: aws logs tail /ecs/faltubaat/nginx-rtmp --follow --region $AWS_REGION"

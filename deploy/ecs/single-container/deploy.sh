@@ -13,35 +13,35 @@ ECR_REPO="faltubaat-single"
 CLUSTER_NAME="faltubaat-cluster"
 SERVICE_NAME="faltubaat-single-service"
 
-echo "ðŸš€ Deploying FaltuBaat Single-Container to ECS..."
+echo "[INFO] Deploying FaltuBaat Single-Container to ECS..."
 
 # Navigate to project root
 cd "$(dirname "$0")/../../.."
 
 # 1. Login to ECR
-echo "ðŸ“¦ Logging into ECR..."
+echo "[INFO] Logging into ECR..."
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # 2. Build Docker image
-echo "ðŸ”¨ Building Docker image..."
+echo "[INFO] Building Docker image..."
 docker build -t $ECR_REPO -f deploy/docker/single-container/Dockerfile .
 
 # 3. Tag image for ECR
-echo "ðŸ·ï¸ Tagging image..."
+echo "[INFO] Tagging image..."
 docker tag $ECR_REPO:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
 # 4. Push to ECR
-echo "â¬†ï¸ Pushing to ECR..."
+echo "[INFO] Pushing to ECR..."
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
 # 5. Register new task definition
-echo "ðŸ“ Registering task definition..."
+echo "[INFO] Registering task definition..."
 aws ecs register-task-definition \
     --cli-input-json file://deploy/ecs/single-container/task-definition.json \
     --region $AWS_REGION
 
 # 6. Update service to use new task definition
-echo "ðŸ”„ Updating ECS service..."
+echo "[INFO] Updating ECS service..."
 aws ecs update-service \
     --cluster $CLUSTER_NAME \
     --service $SERVICE_NAME \
@@ -50,10 +50,10 @@ aws ecs update-service \
     --region $AWS_REGION
 
 echo ""
-echo "âœ… Deployment initiated successfully!"
+echo "[OK] Deployment initiated successfully!"
 echo ""
-echo "ðŸ“Š Monitor deployment:"
+echo "[INFO] Monitor deployment:"
 echo "  aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --region $AWS_REGION"
 echo ""
-echo "ðŸ“‹ View logs:"
+echo "[INFO] View logs:"
 echo "  aws logs tail /ecs/faltubaat-single --follow --region $AWS_REGION"

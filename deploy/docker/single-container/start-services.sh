@@ -1,18 +1,18 @@
 #!/bin/bash
 
-echo "ðŸš€ Starting FaltuBaat Single-Container (Node.js + Nginx/RTMP)..."
+echo "[INFO] Starting FaltuBaat Single-Container (Node.js + Nginx/RTMP)..."
 
 # Generate JWT_SECRET if not set
 if [ -z "$JWT_SECRET" ] || [ "$JWT_SECRET" = "CHANGE_THIS_IN_PRODUCTION" ]; then
     export JWT_SECRET=$(openssl rand -hex 32)
-    echo "ðŸ” Generated random JWT_SECRET"
+    echo "[INFO] Generated random JWT_SECRET"
 fi
 
 # =============================================================================
 # S3 Database Sync (Optional - for testing without EFS)
 # =============================================================================
 if [ "$S3_SYNC_ENABLED" = "true" ] && [ -n "$S3_DB_BUCKET" ]; then
-    echo "ðŸ“¦ S3 database sync enabled"
+    echo "[INFO] S3 database sync enabled"
     
     # Download database from S3 on startup
     /app/s3-db-sync.sh download
@@ -23,7 +23,7 @@ if [ "$S3_SYNC_ENABLED" = "true" ] && [ -n "$S3_DB_BUCKET" ]; then
     # Trap signals to upload on shutdown
     trap '/app/s3-db-sync.sh upload; exit 0' SIGTERM SIGINT
 else
-    echo "ðŸ“¦ Using local/EFS storage for database"
+    echo "[INFO] Using local/EFS storage for database"
 fi
 
 # Ensure HLS directory exists and has correct permissions
@@ -43,11 +43,11 @@ sleep 2
 
 # Check if Nginx started successfully
 if pgrep nginx > /dev/null; then
-    echo "âœ… Nginx RTMP server started on ports 1935 (RTMP) and 8080 (HLS)"
+    echo "[OK] Nginx RTMP server started on ports 1935 (RTMP) and 8080 (HLS)"
 else
-    echo "âŒ Nginx failed to start!"
+    echo "[ERROR] Nginx failed to start!"
     cat /var/log/nginx/error.log 2>/dev/null || true
-    echo "âš ï¸  Continuing with Node.js only..."
+    echo "[WARN] Continuing with Node.js only..."
 fi
 
 # Start Node.js application (foreground - keeps container alive)

@@ -20,18 +20,18 @@ is_s3_enabled() {
 # Download database from S3
 download_db() {
     if ! is_s3_enabled; then
-        echo "ðŸ“¦ S3 sync disabled, using local database"
+        echo "[INFO] S3 sync disabled, using local database"
         return 0
     fi
 
-    echo "â¬‡ï¸  Downloading database from S3..."
+    echo "[INFO] Downloading database from S3..."
     
     mkdir -p "$(dirname "$DB_PATH")"
     
     if aws s3 cp "s3://${S3_DB_BUCKET}/${S3_DB_KEY}" "$DB_PATH" 2>/dev/null; then
-        echo "âœ… Database downloaded from S3"
+        echo "[OK] Database downloaded from S3"
     else
-        echo "âš ï¸  No database found in S3, will create new one"
+        echo "[WARN] No database found in S3, will create new one"
     fi
 }
 
@@ -43,7 +43,7 @@ upload_db() {
 
     if [ -f "$DB_PATH" ]; then
         aws s3 cp "$DB_PATH" "s3://${S3_DB_BUCKET}/${S3_DB_KEY}" && \
-            echo "âœ… Database uploaded to S3"
+            echo "[OK] Database uploaded to S3"
     fi
 }
 
