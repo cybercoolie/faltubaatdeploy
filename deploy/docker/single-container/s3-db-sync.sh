@@ -21,21 +21,21 @@ is_s3_enabled() {
 # Download database from S3
 download_db() {
     if ! is_s3_enabled; then
-        echo "📦 S3 sync disabled, using local database"
+        echo "ðŸ“¦ S3 sync disabled, using local database"
         return 0
     fi
 
-    echo "⬇️  Downloading database from S3..."
+    echo "â¬‡ï¸  Downloading database from S3..."
     
     # Ensure directory exists
     mkdir -p "$(dirname "$DB_PATH")"
     
     # Try to download from S3
     if aws s3 cp "s3://${S3_DB_BUCKET}/${S3_DB_KEY}" "$DB_PATH" 2>/dev/null; then
-        echo "✅ Database downloaded from S3"
+        echo "âœ… Database downloaded from S3"
         return 0
     else
-        echo "⚠️  No database found in S3, will create new one"
+        echo "âš ï¸  No database found in S3, will create new one"
         return 0
     fi
 }
@@ -47,17 +47,17 @@ upload_db() {
     fi
 
     if [ ! -f "$DB_PATH" ]; then
-        echo "⚠️  No local database to upload"
+        echo "âš ï¸  No local database to upload"
         return 0
     fi
 
-    echo "⬆️  Uploading database to S3..."
+    echo "â¬†ï¸  Uploading database to S3..."
     
     if aws s3 cp "$DB_PATH" "s3://${S3_DB_BUCKET}/${S3_DB_KEY}"; then
-        echo "✅ Database uploaded to S3"
+        echo "âœ… Database uploaded to S3"
         return 0
     else
-        echo "❌ Failed to upload database to S3"
+        echo "âŒ Failed to upload database to S3"
         return 1
     fi
 }
@@ -70,7 +70,7 @@ periodic_sync() {
 
     SYNC_INTERVAL="${S3_SYNC_INTERVAL:-300}"  # Default: 5 minutes
     
-    echo "🔄 Starting periodic S3 sync (every ${SYNC_INTERVAL}s)..."
+    echo "ðŸ”„ Starting periodic S3 sync (every ${SYNC_INTERVAL}s)..."
     
     while true; do
         sleep "$SYNC_INTERVAL"

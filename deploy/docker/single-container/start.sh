@@ -8,15 +8,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-echo "🚀 FaltuBaat - Docker Single Container Deployment"
+echo "ðŸš€ FaltuBaat - Docker Single Container Deployment"
 echo "=================================================="
 
 # Load configuration
 if [ -f "$DEPLOY_ROOT/config.env" ]; then
     source "$DEPLOY_ROOT/config.env"
-    echo "✅ Loaded configuration from config.env"
+    echo "âœ… Loaded configuration from config.env"
 else
-    echo "⚠️  No config.env found. Using defaults."
+    echo "âš ï¸  No config.env found. Using defaults."
     GITHUB_REPO="https://github.com/YOUR_ORG/faltubaat.git"
     GITHUB_BRANCH="main"
 fi
@@ -28,7 +28,7 @@ GITHUB_BRANCH="${2:-$GITHUB_BRANCH}"
 # Validate GitHub repo is configured
 if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
     echo ""
-    echo "❌ ERROR: GitHub repository not configured!"
+    echo "âŒ ERROR: GitHub repository not configured!"
     echo ""
     echo "Please either:"
     echo "  1. Edit deploy/config.env and set GITHUB_REPO"
@@ -42,7 +42,7 @@ TEMP_DIR=$(mktemp -d)
 BUILD_DIR="$TEMP_DIR/faltubaat"
 
 echo ""
-echo "📥 Downloading application code..."
+echo "ðŸ“¥ Downloading application code..."
 echo "   Repository: $GITHUB_REPO"
 echo "   Branch: $GITHUB_BRANCH"
 echo ""
@@ -51,20 +51,20 @@ echo ""
 git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_REPO" "$BUILD_DIR"
 
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to clone repository"
+    echo "âŒ Failed to clone repository"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-echo "✅ Code downloaded successfully"
+echo "âœ… Code downloaded successfully"
 
 # Copy Dockerfile to build directory
-echo "📋 Preparing Docker build..."
+echo "ðŸ“‹ Preparing Docker build..."
 cp "$SCRIPT_DIR/Dockerfile" "$BUILD_DIR/"
 
 # Build the Docker image
 echo ""
-echo "🔨 Building Docker image..."
+echo "ðŸ”¨ Building Docker image..."
 cd "$BUILD_DIR"
 
 DOCKER_IMAGE="${DOCKER_REGISTRY:+$DOCKER_REGISTRY/}${DOCKER_IMAGE_NAME:-faltubaat}:${DOCKER_IMAGE_TAG:-latest}"
@@ -72,12 +72,12 @@ DOCKER_IMAGE="${DOCKER_REGISTRY:+$DOCKER_REGISTRY/}${DOCKER_IMAGE_NAME:-faltubaa
 docker build -t "$DOCKER_IMAGE" -f Dockerfile .
 
 if [ $? -ne 0 ]; then
-    echo "❌ Docker build failed"
+    echo "âŒ Docker build failed"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-echo "✅ Docker image built: $DOCKER_IMAGE"
+echo "âœ… Docker image built: $DOCKER_IMAGE"
 
 # Cleanup temp directory
 rm -rf "$TEMP_DIR"
@@ -87,13 +87,13 @@ docker volume create faltubaat-data 2>/dev/null || true
 
 # Stop existing container if running
 echo ""
-echo "🔄 Stopping existing container (if any)..."
+echo "ðŸ”„ Stopping existing container (if any)..."
 docker stop faltubaat-single 2>/dev/null || true
 docker rm faltubaat-single 2>/dev/null || true
 
 # Run the container
 echo ""
-echo "🚀 Starting container..."
+echo "ðŸš€ Starting container..."
 docker run -d \
     --name faltubaat-single \
     --restart unless-stopped \
@@ -106,20 +106,20 @@ docker run -d \
     "$DOCKER_IMAGE"
 
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to start container"
+    echo "âŒ Failed to start container"
     exit 1
 fi
 
 echo ""
-echo "✅ FaltuBaat is running!"
+echo "âœ… FaltuBaat is running!"
 echo ""
-echo "📍 Access points:"
+echo "ðŸ“ Access points:"
 echo "   HTTP:  http://localhost:3000"
 echo "   HTTPS: https://localhost:3443"
 echo "   RTMP:  rtmp://localhost:1935/live"
 echo "   HLS:   http://localhost:8080/hls/"
 echo ""
-echo "📋 Container commands:"
+echo "ðŸ“‹ Container commands:"
 echo "   View logs:  docker logs -f faltubaat-single"
 echo "   Stop:       docker stop faltubaat-single"
 echo "   Restart:    docker restart faltubaat-single"

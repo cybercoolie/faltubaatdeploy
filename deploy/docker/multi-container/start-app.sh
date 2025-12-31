@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo "🚀 Starting FaltuBaat Chat Application..."
+echo "ðŸš€ Starting FaltuBaat Chat Application..."
 
 # =============================================================================
 # S3 Database Sync (Optional - for testing without EFS)
 # =============================================================================
 if [ "$S3_SYNC_ENABLED" = "true" ] && [ -n "$S3_DB_BUCKET" ]; then
-    echo "📦 S3 database sync enabled"
+    echo "ðŸ“¦ S3 database sync enabled"
     
     # Download database from S3 on startup
     /app/s3-db-sync.sh download
@@ -17,7 +17,7 @@ if [ "$S3_SYNC_ENABLED" = "true" ] && [ -n "$S3_DB_BUCKET" ]; then
     # Trap signals to upload on shutdown
     trap '/app/s3-db-sync.sh upload; exit 0' SIGTERM SIGINT
 else
-    echo "📦 Using local/EFS storage for database"
+    echo "ðŸ“¦ Using local/EFS storage for database"
 fi
 
 # Start Node.js application

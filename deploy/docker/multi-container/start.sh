@@ -8,15 +8,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-echo "🚀 FaltuBaat - Docker Multi-Container Deployment"
+echo "ðŸš€ FaltuBaat - Docker Multi-Container Deployment"
 echo "=================================================="
 
 # Load configuration
 if [ -f "$DEPLOY_ROOT/config.env" ]; then
     source "$DEPLOY_ROOT/config.env"
-    echo "✅ Loaded configuration from config.env"
+    echo "âœ… Loaded configuration from config.env"
 else
-    echo "⚠️  No config.env found. Using defaults."
+    echo "âš ï¸  No config.env found. Using defaults."
     GITHUB_REPO="https://github.com/YOUR_ORG/faltubaat.git"
     GITHUB_BRANCH="main"
 fi
@@ -28,7 +28,7 @@ GITHUB_BRANCH="${2:-$GITHUB_BRANCH}"
 # Validate GitHub repo is configured
 if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
     echo ""
-    echo "❌ ERROR: GitHub repository not configured!"
+    echo "âŒ ERROR: GitHub repository not configured!"
     echo ""
     echo "Please either:"
     echo "  1. Edit deploy/config.env and set GITHUB_REPO"
@@ -43,7 +43,7 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 echo ""
-echo "📥 Downloading application code..."
+echo "ðŸ“¥ Downloading application code..."
 echo "   Repository: $GITHUB_REPO"
 echo "   Branch: $GITHUB_BRANCH"
 echo ""
@@ -52,15 +52,15 @@ echo ""
 git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_REPO" "$BUILD_DIR/app"
 
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to clone repository"
+    echo "âŒ Failed to clone repository"
     rm -rf "$BUILD_DIR"
     exit 1
 fi
 
-echo "✅ Code downloaded successfully"
+echo "âœ… Code downloaded successfully"
 
 # Copy Docker files to build directory
-echo "📋 Preparing Docker build..."
+echo "ðŸ“‹ Preparing Docker build..."
 cp "$SCRIPT_DIR/Dockerfile.app" "$BUILD_DIR/"
 cp "$SCRIPT_DIR/Dockerfile.nginx-rtmp" "$BUILD_DIR/"
 cp "$SCRIPT_DIR/nginx-rtmp.conf" "$BUILD_DIR/"
@@ -119,34 +119,34 @@ EOF
 
 # Stop existing containers
 echo ""
-echo "🔄 Stopping existing containers (if any)..."
+echo "ðŸ”„ Stopping existing containers (if any)..."
 cd "$BUILD_DIR"
 docker compose down 2>/dev/null || true
 
 # Build and start
 echo ""
-echo "🔨 Building and starting containers..."
+echo "ðŸ”¨ Building and starting containers..."
 docker compose up -d --build
 
 if [ $? -ne 0 ]; then
-    echo "❌ Docker Compose failed"
+    echo "âŒ Docker Compose failed"
     exit 1
 fi
 
 echo ""
-echo "✅ FaltuBaat Multi-Container is running!"
+echo "âœ… FaltuBaat Multi-Container is running!"
 echo ""
-echo "📍 Access points:"
+echo "ðŸ“ Access points:"
 echo "   HTTP:  http://localhost:3000"
 echo "   HTTPS: https://localhost:3443"
 echo "   RTMP:  rtmp://localhost:1935/live"
 echo "   HLS:   http://localhost:8080/hls/"
 echo ""
-echo "🐳 Containers:"
-echo "   faltubaat-app        → Node.js Chat Application"
-echo "   faltubaat-nginx-rtmp → Nginx RTMP/HLS Streaming"
+echo "ðŸ³ Containers:"
+echo "   faltubaat-app        â†’ Node.js Chat Application"
+echo "   faltubaat-nginx-rtmp â†’ Nginx RTMP/HLS Streaming"
 echo ""
-echo "📋 Commands:"
+echo "ðŸ“‹ Commands:"
 echo "   View logs:      cd $BUILD_DIR && docker compose logs -f"
 echo "   Stop:           cd $BUILD_DIR && docker compose down"
 echo "   Restart:        cd $BUILD_DIR && docker compose restart"

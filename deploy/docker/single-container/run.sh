@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🐳 Building and running FaltuBaat Single-Container..."
+echo "ðŸ³ Building and running FaltuBaat Single-Container..."
 
 # Navigate to project root
 cd "$(dirname "$0")/../../.."
@@ -26,17 +26,17 @@ docker run -d \
   --restart unless-stopped \
   faltubaat-single
 
-echo "✅ Single-container application started successfully!"
+echo "âœ… Single-container application started successfully!"
 echo ""
-echo "🌐 Access your application:"
+echo "ðŸŒ Access your application:"
 echo "  Chat App (HTTP):  http://localhost:3000"
 echo "  Chat App (HTTPS): https://localhost:3443"
 echo "  RTMP Server:      rtmp://localhost:1935/live"
 echo "  HLS Streams:      http://localhost:8080/hls/"
 echo ""
-echo "🐳 Container: faltubaat-single (Node.js + Nginx/RTMP)"
+echo "ðŸ³ Container: faltubaat-single (Node.js + Nginx/RTMP)"
 echo ""
-echo "📊 Management:"
+echo "ðŸ“Š Management:"
 echo "  View logs:  docker logs -f faltubaat-single"
 echo "  Stop app:   docker stop faltubaat-single"
 echo "  Remove app: docker rm faltubaat-single"

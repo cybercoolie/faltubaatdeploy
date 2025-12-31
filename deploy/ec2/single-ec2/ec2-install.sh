@@ -6,7 +6,7 @@
 
 set -e
 
-echo "🚀 FaltuBaat - EC2 Installation Script"
+echo "ðŸš€ FaltuBaat - EC2 Installation Script"
 echo "======================================="
 
 # ============================================
@@ -18,12 +18,12 @@ DEPLOY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Load configuration
 if [ -f "$DEPLOY_ROOT/config.env" ]; then
     source "$DEPLOY_ROOT/config.env"
-    echo "✅ Loaded configuration from config.env"
+    echo "âœ… Loaded configuration from config.env"
 elif [ -f "$SCRIPT_DIR/../../config.env" ]; then
     source "$SCRIPT_DIR/../../config.env"
-    echo "✅ Loaded configuration from config.env"
+    echo "âœ… Loaded configuration from config.env"
 else
-    echo "⚠️  No config.env found. Using defaults or command line args."
+    echo "âš ï¸  No config.env found. Using defaults or command line args."
     GITHUB_REPO="${GITHUB_REPO:-https://github.com/YOUR_ORG/faltubaat.git}"
     GITHUB_BRANCH="${GITHUB_BRANCH:-main}"
 fi
@@ -35,7 +35,7 @@ GITHUB_BRANCH="${2:-$GITHUB_BRANCH}"
 # Validate GitHub repo is configured
 if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
     echo ""
-    echo "❌ ERROR: GitHub repository not configured!"
+    echo "âŒ ERROR: GitHub repository not configured!"
     echo ""
     echo "Please either:"
     echo "  1. Edit deploy/config.env and set GITHUB_REPO"
@@ -46,7 +46,7 @@ if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
 fi
 
 echo ""
-echo "📥 Will download code from:"
+echo "ðŸ“¥ Will download code from:"
 echo "   Repository: $GITHUB_REPO"
 echo "   Branch: $GITHUB_BRANCH"
 echo ""
@@ -57,11 +57,11 @@ if [ -f /etc/os-release ]; then
     OS=$ID
     VERSION=$VERSION_ID
 else
-    echo "❌ Cannot detect OS. Exiting."
+    echo "âŒ Cannot detect OS. Exiting."
     exit 1
 fi
 
-echo "📦 Detected OS: $OS $VERSION"
+echo "ðŸ“¦ Detected OS: $OS $VERSION"
 
 # Set app directory
 APP_DIR="/opt/faltubaat"
@@ -69,7 +69,7 @@ APP_USER="faltubaat"
 
 # Function for Amazon Linux / RHEL
 install_amazon_linux() {
-    echo "📦 Installing dependencies for Amazon Linux..."
+    echo "ðŸ“¦ Installing dependencies for Amazon Linux..."
     
     # Update system
     sudo yum update -y
@@ -133,7 +133,7 @@ EOF
 
 # Function for Ubuntu/Debian
 install_ubuntu() {
-    echo "📦 Installing dependencies for Ubuntu..."
+    echo "ðŸ“¦ Installing dependencies for Ubuntu..."
     
     # Update system
     sudo apt-get update
@@ -163,7 +163,7 @@ case $OS in
         install_ubuntu
         ;;
     *)
-        echo "❌ Unsupported OS: $OS"
+        echo "âŒ Unsupported OS: $OS"
         exit 1
         ;;
 esac
@@ -172,31 +172,31 @@ esac
 NGINX_CONF_SOURCE="${NGINX_CONF_SOURCE:-deploy/ec2/nginx-ec2.conf}"
 
 # Create app user
-echo "👤 Creating application user..."
+echo "ðŸ‘¤ Creating application user..."
 sudo useradd -r -s /bin/false $APP_USER 2>/dev/null || true
 
 # Create app directory
-echo "📁 Setting up application directory..."
+echo "ðŸ“ Setting up application directory..."
 sudo mkdir -p $APP_DIR
 sudo mkdir -p $APP_DIR/data
 sudo mkdir -p /var/www/html/hls
 sudo mkdir -p /var/log/faltubaat
 
 # Download application code from GitHub
-echo "📥 Downloading application code from GitHub..."
+echo "ðŸ“¥ Downloading application code from GitHub..."
 TEMP_DIR=$(mktemp -d)
 git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_REPO" "$TEMP_DIR/app"
 
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to clone repository"
+    echo "âŒ Failed to clone repository"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-echo "✅ Code downloaded successfully"
+echo "âœ… Code downloaded successfully"
 
 # Copy application files
-echo "📋 Copying application files..."
+echo "ðŸ“‹ Copying application files..."
 sudo cp -r $TEMP_DIR/app/* $APP_DIR/
 sudo chown -R $APP_USER:$APP_USER $APP_DIR
 sudo chown -R $APP_USER:$APP_USER /var/www/html/hls
@@ -212,7 +212,7 @@ fi
 rm -rf "$TEMP_DIR"
 
 # Setup environment file
-echo "📝 Setting up environment configuration..."
+echo "ðŸ“ Setting up environment configuration..."
 if [ ! -f "$APP_DIR/.env" ]; then
     sudo cp $APP_DIR/.env.example $APP_DIR/.env 2>/dev/null || true
     # Generate random JWT secret
@@ -231,17 +231,17 @@ if [ ! -f "$APP_DIR/.env" ]; then
 fi
 
 # Install Node.js dependencies
-echo "📦 Installing Node.js dependencies..."
+echo "ðŸ“¦ Installing Node.js dependencies..."
 cd $APP_DIR
 sudo -u $APP_USER npm install --production
 
 # Initialize database
-echo "🗄️ Initializing database..."
+echo "ðŸ—„ï¸ Initializing database..."
 cd $APP_DIR
 sudo -u $APP_USER npm run init-db
 
 # Generate SSL certificates
-echo "🔐 Generating SSL certificates..."
+echo "ðŸ” Generating SSL certificates..."
 sudo openssl req -x509 -newkey rsa:4096 \
     -keyout $APP_DIR/key.pem \
     -out $APP_DIR/cert.pem \
@@ -250,7 +250,7 @@ sudo openssl req -x509 -newkey rsa:4096 \
 sudo chown $APP_USER:$APP_USER $APP_DIR/key.pem $APP_DIR/cert.pem
 
 # Copy Nginx configuration
-echo "⚙️ Configuring Nginx..."
+echo "âš™ï¸ Configuring Nginx..."
 if [ "$NGINX_NEEDS_MODULE_LOAD" = "true" ]; then
     # Ubuntu: Use nginx.conf with load_module directive
     sudo cp $APP_DIR/nginx.conf /etc/nginx/nginx.conf
@@ -266,12 +266,12 @@ if [ ! -f /etc/nginx/mime.types ]; then
 fi
 
 # Copy systemd service file
-echo "🔧 Setting up systemd service..."
+echo "ðŸ”§ Setting up systemd service..."
 sudo cp $APP_DIR/faltubaat.service /etc/systemd/system/faltubaat.service
 sudo systemctl daemon-reload
 
 # Enable and start services
-echo "🚀 Starting services..."
+echo "ðŸš€ Starting services..."
 sudo systemctl enable nginx
 sudo systemctl enable faltubaat
 sudo systemctl start nginx
@@ -279,7 +279,7 @@ sudo systemctl start faltubaat
 
 # Configure firewall (if firewalld is active)
 if command -v firewall-cmd &> /dev/null; then
-    echo "🔥 Configuring firewall..."
+    echo "ðŸ”¥ Configuring firewall..."
     sudo firewall-cmd --permanent --add-port=3000/tcp
     sudo firewall-cmd --permanent --add-port=3443/tcp
     sudo firewall-cmd --permanent --add-port=1935/tcp
@@ -293,16 +293,16 @@ fi
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "YOUR_EC2_IP")
 
 echo ""
-echo "✅ Installation complete!"
+echo "âœ… Installation complete!"
 echo "======================================="
 echo ""
-echo "🌐 Access your application:"
+echo "ðŸŒ Access your application:"
 echo "   HTTP:  http://$PUBLIC_IP:3000"
 echo "   HTTPS: https://$PUBLIC_IP:3443"
 echo "   RTMP:  rtmp://$PUBLIC_IP:1935/live"
 echo "   HLS:   http://$PUBLIC_IP:8080/hls/"
 echo ""
-echo "📊 Service Management:"
+echo "ðŸ“Š Service Management:"
 echo "   Status:  sudo systemctl status faltubaat"
 echo "   Logs:    sudo journalctl -u faltubaat -f"
 echo "   Restart: sudo systemctl restart faltubaat"
@@ -311,13 +311,13 @@ echo ""
 echo "   Nginx Status:  sudo systemctl status nginx"
 echo "   Nginx Logs:    sudo tail -f /var/log/nginx/error.log"
 echo ""
-echo "⚠️  Open these ports in your EC2 Security Group:"
+echo "âš ï¸  Open these ports in your EC2 Security Group:"
 echo "   - 3000  (TCP) - HTTP Chat"
 echo "   - 3443  (TCP) - HTTPS Chat"
 echo "   - 1935  (TCP) - RTMP Streaming"
 echo "   - 8080  (TCP) - HLS Streams"
 echo ""
-echo "📁 Application Files:"
+echo "ðŸ“ Application Files:"
 echo "   App:    $APP_DIR"
 echo "   DB:     $APP_DIR/data/faltubaat.db"
 echo "   Env:    $APP_DIR/.env"

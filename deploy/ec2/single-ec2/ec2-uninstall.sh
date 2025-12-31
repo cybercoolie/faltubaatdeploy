@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🗑️  FaltuBaat Uninstall Script"
+echo "ðŸ—‘ï¸  FaltuBaat Uninstall Script"
 echo "=============================="
 
 read -p "Are you sure you want to uninstall FaltuBaat? (y/N): " confirm
@@ -15,17 +15,17 @@ if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
 fi
 
 # Stop and disable services
-echo "⏹️  Stopping services..."
+echo "â¹ï¸  Stopping services..."
 sudo systemctl stop faltubaat 2>/dev/null || true
 sudo systemctl disable faltubaat 2>/dev/null || true
 
 # Remove service file
-echo "🗑️  Removing service file..."
+echo "ðŸ—‘ï¸  Removing service file..."
 sudo rm -f /etc/systemd/system/faltubaat.service
 sudo systemctl daemon-reload
 
 # Remove application directory
-echo "🗑️  Removing application files..."
+echo "ðŸ—‘ï¸  Removing application files..."
 sudo rm -rf /opt/faltubaat
 
 # Remove HLS directory
@@ -35,9 +35,9 @@ sudo rm -rf /var/www/html/hls
 sudo rm -rf /var/log/faltubaat
 
 # Remove user
-echo "👤 Removing application user..."
+echo "ðŸ‘¤ Removing application user..."
 sudo userdel faltubaat 2>/dev/null || true
 
 echo ""
-echo "✅ Uninstall complete!"
+echo "âœ… Uninstall complete!"
 echo "Note: Nginx was not removed. To remove: sudo yum remove nginx (or apt remove nginx)"
