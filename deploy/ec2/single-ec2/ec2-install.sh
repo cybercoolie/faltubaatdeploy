@@ -6,7 +6,7 @@
 
 set -e
 
-echo "Ã°Å¸Å¡â‚¬ FaltuBaat - EC2 Installation Script"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ FaltuBaat - EC2 Installation Script"
 echo "======================================="
 
 # ============================================
@@ -18,12 +18,12 @@ DEPLOY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Load configuration
 if [ -f "$DEPLOY_ROOT/config.env" ]; then
     source "$DEPLOY_ROOT/config.env"
-    echo "Ã¢Å“â€¦ Loaded configuration from config.env"
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded configuration from config.env"
 elif [ -f "$SCRIPT_DIR/../../config.env" ]; then
     source "$SCRIPT_DIR/../../config.env"
-    echo "Ã¢Å“â€¦ Loaded configuration from config.env"
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded configuration from config.env"
 else
-    echo "Ã¢Å¡Â Ã¯Â¸Â  No config.env found. Using defaults or command line args."
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â  No config.env found. Using defaults or command line args."
     GITHUB_REPO="${GITHUB_REPO:-https://github.com/YOUR_ORG/faltubaat.git}"
     GITHUB_BRANCH="${GITHUB_BRANCH:-main}"
 fi
@@ -35,7 +35,7 @@ GITHUB_BRANCH="${2:-$GITHUB_BRANCH}"
 # Validate GitHub repo is configured
 if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
     echo ""
-    echo "Ã¢ÂÅ’ ERROR: GitHub repository not configured!"
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ ERROR: GitHub repository not configured!"
     echo ""
     echo "Please either:"
     echo "  1. Edit deploy/config.env and set GITHUB_REPO"
@@ -46,7 +46,7 @@ if [[ "$GITHUB_REPO" == *"YOUR_ORG"* ]]; then
 fi
 
 echo ""
-echo "Ã°Å¸â€œÂ¥ Will download code from:"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¥ Will download code from:"
 echo "   Repository: $GITHUB_REPO"
 echo "   Branch: $GITHUB_BRANCH"
 echo ""
@@ -57,11 +57,11 @@ if [ -f /etc/os-release ]; then
     OS=$ID
     VERSION=$VERSION_ID
 else
-    echo "Ã¢ÂÅ’ Cannot detect OS. Exiting."
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Cannot detect OS. Exiting."
     exit 1
 fi
 
-echo "Ã°Å¸â€œÂ¦ Detected OS: $OS $VERSION"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¦ Detected OS: $OS $VERSION"
 
 # Set app directory
 APP_DIR="/opt/faltubaat"
@@ -69,7 +69,7 @@ APP_USER="faltubaat"
 
 # Function for Amazon Linux / RHEL
 install_amazon_linux() {
-    echo "Ã°Å¸â€œÂ¦ Installing dependencies for Amazon Linux..."
+    echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¦ Installing dependencies for Amazon Linux..."
     
     # Update system
     sudo yum update -y
@@ -88,7 +88,7 @@ install_amazon_linux() {
     cd /tmp
     
     # Clean up previous nginx downloads if they exist
-    echo "ðŸ§¹ Cleaning up previous nginx downloads..."
+    echo "ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â¹ Cleaning up previous nginx downloads..."
     rm -rf /tmp/nginx-1.24.0*
     rm -rf /tmp/nginx-rtmp-module
     
@@ -139,7 +139,7 @@ EOF
 
 # Function for Ubuntu/Debian
 install_ubuntu() {
-    echo "Ã°Å¸â€œÂ¦ Installing dependencies for Ubuntu..."
+    echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¦ Installing dependencies for Ubuntu..."
     
     # Update system
     sudo apt-get update
@@ -169,7 +169,7 @@ case $OS in
         install_ubuntu
         ;;
     *)
-        echo "Ã¢ÂÅ’ Unsupported OS: $OS"
+        echo "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Unsupported OS: $OS"
         exit 1
         ;;
 esac
@@ -177,16 +177,20 @@ esac
 # Default nginx config source if not set
 NGINX_CONF_SOURCE="${NGINX_CONF_SOURCE:-deploy/ec2/nginx-ec2.conf}"
 
-# Create app user
-echo "ðŸ‘¤ Creating application user..."
-sudo useradd -r -s /bin/false $APP_USER 2>/dev/null || true
+# Create app user with home directory for npm cache
+echo "Ã°Å¸â€˜Â¤ Creating application user..."
+sudo useradd -r -m -d /home/$APP_USER -s /bin/false $APP_USER 2>/dev/null || true
+
+# Ensure home directory exists and has correct permissions (for re-runs)
+sudo mkdir -p /home/$APP_USER/.npm
+sudo chown -R $APP_USER:$APP_USER /home/$APP_USER
 
 # Create app directory with proper permissions
-echo "ðŸ“ Setting up application directory..."
+echo "ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â Setting up application directory..."
 
 # Remove existing app directory if it exists (for re-runs)
 if [ -d "$APP_DIR" ]; then
-    echo "ðŸ§¹ Cleaning up existing app directory..."
+    echo "ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â¹ Cleaning up existing app directory..."
     sudo rm -rf $APP_DIR
 fi
 
@@ -201,20 +205,20 @@ sudo chown -R $APP_USER:$APP_USER $APP_DIR
 sudo chown -R $APP_USER:$APP_USER /var/log/faltubaat
 
 # Download application code from GitHub
-echo "Ã°Å¸â€œÂ¥ Downloading application code from GitHub..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¥ Downloading application code from GitHub..."
 TEMP_DIR=$(mktemp -d)
 git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_REPO" "$TEMP_DIR/app"
 
 if [ $? -ne 0 ]; then
-    echo "Ã¢ÂÅ’ Failed to clone repository"
+    echo "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Failed to clone repository"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-echo "Ã¢Å“â€¦ Code downloaded successfully"
+echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Code downloaded successfully"
 
 # Copy application files
-echo "Ã°Å¸â€œâ€¹ Copying application files..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ Copying application files..."
 sudo cp -r $TEMP_DIR/app/* $APP_DIR/
 sudo chown -R $APP_USER:$APP_USER $APP_DIR
 sudo chown -R $APP_USER:$APP_USER /var/www/html/hls
@@ -230,7 +234,7 @@ fi
 rm -rf "$TEMP_DIR"
 
 # Setup environment file
-echo "Ã°Å¸â€œÂ Setting up environment configuration..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â Setting up environment configuration..."
 if [ ! -f "$APP_DIR/.env" ]; then
     sudo cp $APP_DIR/.env.example $APP_DIR/.env 2>/dev/null || true
     # Generate random JWT secret
@@ -249,7 +253,7 @@ if [ ! -f "$APP_DIR/.env" ]; then
 fi
 
 # Install Node.js dependencies
-echo "Ã°Å¸â€œÂ¦ Installing Node.js dependencies..."
+echo "ðŸ“¦ Installing Node.js dependencies..."
 cd $APP_DIR
 
 # Fix npm cache permissions (in case of previous root-owned files)
@@ -257,15 +261,19 @@ if [ -d "/home/$APP_USER/.npm" ]; then
     sudo chown -R $APP_USER:$APP_USER /home/$APP_USER/.npm
 fi
 
+# Update npm to latest version
+echo "â¬†ï¸ Updating npm to latest version..."
+sudo -u $APP_USER npm install -g npm@latest
+
 sudo -u $APP_USER npm install --omit=dev
 
 # Initialize database
-echo "Ã°Å¸â€”â€žÃ¯Â¸Â Initializing database..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Initializing database..."
 cd $APP_DIR
 sudo -u $APP_USER npm run init-db
 
 # Generate SSL certificates
-echo "Ã°Å¸â€Â Generating SSL certificates..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Generating SSL certificates..."
 sudo openssl req -x509 -newkey rsa:4096 \
     -keyout $APP_DIR/key.pem \
     -out $APP_DIR/cert.pem \
@@ -274,7 +282,7 @@ sudo openssl req -x509 -newkey rsa:4096 \
 sudo chown $APP_USER:$APP_USER $APP_DIR/key.pem $APP_DIR/cert.pem
 
 # Copy Nginx configuration
-echo "Ã¢Å¡â„¢Ã¯Â¸Â Configuring Nginx..."
+echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Configuring Nginx..."
 if [ "$NGINX_NEEDS_MODULE_LOAD" = "true" ]; then
     # Ubuntu: Use nginx.conf with load_module directive
     sudo cp $APP_DIR/nginx.conf /etc/nginx/nginx.conf
@@ -290,12 +298,12 @@ if [ ! -f /etc/nginx/mime.types ]; then
 fi
 
 # Copy systemd service file
-echo "Ã°Å¸â€Â§ Setting up systemd service..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â§ Setting up systemd service..."
 sudo cp $APP_DIR/faltubaat.service /etc/systemd/system/faltubaat.service
 sudo systemctl daemon-reload
 
 # Enable and start services
-echo "Ã°Å¸Å¡â‚¬ Starting services..."
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Starting services..."
 sudo systemctl enable nginx
 sudo systemctl enable faltubaat
 sudo systemctl start nginx
@@ -303,7 +311,7 @@ sudo systemctl start faltubaat
 
 # Configure firewall (if firewalld is active)
 if command -v firewall-cmd &> /dev/null; then
-    echo "Ã°Å¸â€Â¥ Configuring firewall..."
+    echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â¥ Configuring firewall..."
     sudo firewall-cmd --permanent --add-port=3000/tcp
     sudo firewall-cmd --permanent --add-port=3443/tcp
     sudo firewall-cmd --permanent --add-port=1935/tcp
@@ -317,16 +325,16 @@ fi
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "YOUR_EC2_IP")
 
 echo ""
-echo "Ã¢Å“â€¦ Installation complete!"
+echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Installation complete!"
 echo "======================================="
 echo ""
-echo "Ã°Å¸Å’Â Access your application:"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Access your application:"
 echo "   HTTP:  http://$PUBLIC_IP:3000"
 echo "   HTTPS: https://$PUBLIC_IP:3443"
 echo "   RTMP:  rtmp://$PUBLIC_IP:1935/live"
 echo "   HLS:   http://$PUBLIC_IP:8080/hls/"
 echo ""
-echo "Ã°Å¸â€œÅ  Service Management:"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â  Service Management:"
 echo "   Status:  sudo systemctl status faltubaat"
 echo "   Logs:    sudo journalctl -u faltubaat -f"
 echo "   Restart: sudo systemctl restart faltubaat"
@@ -335,13 +343,13 @@ echo ""
 echo "   Nginx Status:  sudo systemctl status nginx"
 echo "   Nginx Logs:    sudo tail -f /var/log/nginx/error.log"
 echo ""
-echo "Ã¢Å¡Â Ã¯Â¸Â  Open these ports in your EC2 Security Group:"
+echo "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â  Open these ports in your EC2 Security Group:"
 echo "   - 3000  (TCP) - HTTP Chat"
 echo "   - 3443  (TCP) - HTTPS Chat"
 echo "   - 1935  (TCP) - RTMP Streaming"
 echo "   - 8080  (TCP) - HLS Streams"
 echo ""
-echo "Ã°Å¸â€œÂ Application Files:"
+echo "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â Application Files:"
 echo "   App:    $APP_DIR"
 echo "   DB:     $APP_DIR/data/faltubaat.db"
 echo "   Env:    $APP_DIR/.env"
