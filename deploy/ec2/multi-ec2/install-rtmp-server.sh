@@ -7,7 +7,7 @@
 
 set -e
 
-echo "ðŸš€ FaltuBaat - RTMP Server Installation"
+echo "Ã°Å¸Å¡â‚¬ FaltuBaat - RTMP Server Installation"
 echo "========================================"
 
 # Detect OS
@@ -16,30 +16,30 @@ if [ -f /etc/os-release ]; then
     OS=$ID
     VERSION=$VERSION_ID
 else
-    echo "âŒ Cannot detect OS. Exiting."
+    echo "Ã¢ÂÅ’ Cannot detect OS. Exiting."
     exit 1
 fi
 
-echo "ðŸ“¦ Detected OS: $OS $VERSION"
+echo "Ã°Å¸â€œÂ¦ Detected OS: $OS $VERSION"
 
 # Get App server IP from user
 read -p "Enter App Server PRIVATE IP address (for stream callbacks): " APP_SERVER_IP
 if [ -z "$APP_SERVER_IP" ]; then
-    echo "âŒ App server IP is required for stream callbacks."
+    echo "Ã¢ÂÅ’ App server IP is required for stream callbacks."
     exit 1
 fi
 
 # Validate IP format
 if ! [[ $APP_SERVER_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "âŒ Invalid IP address format: $APP_SERVER_IP"
+    echo "Ã¢ÂÅ’ Invalid IP address format: $APP_SERVER_IP"
     exit 1
 fi
 
-echo "ðŸ“¡ App Server IP: $APP_SERVER_IP"
+echo "Ã°Å¸â€œÂ¡ App Server IP: $APP_SERVER_IP"
 
 # Function for Amazon Linux / RHEL
 install_amazon_linux() {
-    echo "ðŸ“¦ Installing dependencies for Amazon Linux..."
+    echo "Ã°Å¸â€œÂ¦ Installing dependencies for Amazon Linux..."
     
     sudo yum update -y
     
@@ -48,6 +48,12 @@ install_amazon_linux() {
     
     # Download and compile Nginx with RTMP
     cd /tmp
+    
+    # Clean up previous nginx downloads if they exist
+    echo "ðŸ§¹ Cleaning up previous nginx downloads..."
+    rm -rf /tmp/nginx-1.24.0*
+    rm -rf /tmp/nginx-rtmp-module
+    
     wget http://nginx.org/download/nginx-1.24.0.tar.gz
     tar -xzf nginx-1.24.0.tar.gz
     git clone https://github.com/arut/nginx-rtmp-module.git
@@ -90,7 +96,7 @@ EOF
 
 # Function for Ubuntu/Debian
 install_ubuntu() {
-    echo "ðŸ“¦ Installing dependencies for Ubuntu..."
+    echo "Ã°Å¸â€œÂ¦ Installing dependencies for Ubuntu..."
     
     sudo apt-get update
     sudo apt-get upgrade -y
@@ -108,20 +114,20 @@ case $OS in
         install_ubuntu
         ;;
     *)
-        echo "âŒ Unsupported OS: $OS"
+        echo "Ã¢ÂÅ’ Unsupported OS: $OS"
         exit 1
         ;;
 esac
 
 # Create HLS directory
-echo "ðŸ“ Setting up directories..."
+echo "Ã°Å¸â€œÂ Setting up directories..."
 sudo mkdir -p /var/www/html/hls
 sudo chown -R nginx:nginx /var/www/html/hls 2>/dev/null || \
 sudo chown -R www-data:www-data /var/www/html/hls 2>/dev/null || true
 sudo chmod 755 /var/www/html/hls
 
 # Create nginx configuration
-echo "âš™ï¸ Configuring Nginx RTMP..."
+echo "Ã¢Å¡â„¢Ã¯Â¸Â Configuring Nginx RTMP..."
 
 # Check if Ubuntu (needs load_module)
 if [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
@@ -213,18 +219,18 @@ http {
 EOF
 
 # Test nginx configuration
-echo "ðŸ” Testing Nginx configuration..."
+echo "Ã°Å¸â€Â Testing Nginx configuration..."
 sudo nginx -t
 
 # Enable and start nginx
-echo "ðŸš€ Starting Nginx RTMP server..."
+echo "Ã°Å¸Å¡â‚¬ Starting Nginx RTMP server..."
 sudo systemctl daemon-reload
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
 # Configure firewall (if firewalld is active)
 if command -v firewall-cmd &> /dev/null; then
-    echo "ðŸ”¥ Configuring firewall..."
+    echo "Ã°Å¸â€Â¥ Configuring firewall..."
     sudo firewall-cmd --permanent --add-port=1935/tcp
     sudo firewall-cmd --permanent --add-port=8080/tcp
     sudo firewall-cmd --reload
@@ -234,25 +240,25 @@ fi
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "YOUR_EC2_IP")
 
 echo ""
-echo "âœ… RTMP Server Installation complete!"
+echo "Ã¢Å“â€¦ RTMP Server Installation complete!"
 echo "======================================="
 echo ""
-echo "ðŸŽ¥ Stream endpoints:"
+echo "Ã°Å¸Å½Â¥ Stream endpoints:"
 echo "   RTMP:  rtmp://$PUBLIC_IP:1935/live/STREAM_KEY"
 echo "   HLS:   http://$PUBLIC_IP:8080/hls/STREAM_KEY.m3u8"
 echo ""
-echo "ðŸ“¡ Connected to App Server: $APP_SERVER_IP:3000"
+echo "Ã°Å¸â€œÂ¡ Connected to App Server: $APP_SERVER_IP:3000"
 echo ""
-echo "ðŸ“Š Service Management:"
+echo "Ã°Å¸â€œÅ  Service Management:"
 echo "   Status:  sudo systemctl status nginx"
 echo "   Logs:    sudo tail -f /var/log/nginx/error.log"
 echo "   Restart: sudo systemctl restart nginx"
 echo ""
-echo "âš ï¸  Open these ports in your EC2 Security Group:"
+echo "Ã¢Å¡Â Ã¯Â¸Â  Open these ports in your EC2 Security Group:"
 echo "   - 1935  (TCP) - RTMP Streaming"
 echo "   - 8080  (TCP) - HLS Streams"
 echo ""
-echo "ðŸ”§ To change App Server IP later, edit:"
+echo "Ã°Å¸â€Â§ To change App Server IP later, edit:"
 echo "   /etc/nginx/nginx.conf"
 echo "   Then: sudo systemctl restart nginx"
 echo ""
