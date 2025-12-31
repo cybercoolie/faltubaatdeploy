@@ -1,0 +1,44 @@
+{
+  "serviceName": "faltubaat-single-service",
+  "cluster": "faltubaat-cluster",
+  "taskDefinition": "faltubaat-single",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-XXXXXXXXX",
+        "subnet-YYYYYYYYY"
+      ],
+      "securityGroups": [
+        "sg-XXXXXXXXX"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:YOUR_REGION:YOUR_ACCOUNT_ID:targetgroup/faltubaat-http/XXXXXXXXX",
+      "containerName": "faltubaat-single",
+      "containerPort": 3000
+    }
+  ],
+  "healthCheckGracePeriodSeconds": 120,
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "enableECSManagedTags": true,
+  "propagateTags": "SERVICE",
+  "tags": [
+    {
+      "key": "Application",
+      "value": "FaltuBaat"
+    }
+  ]
+}

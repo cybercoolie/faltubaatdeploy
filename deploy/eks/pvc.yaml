@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: faltubaat-data-pvc
+  namespace: faltubaat
+spec:
+  accessModes:
+    - ReadWriteMany  # EFS supports multiple pods
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: faltubaat-hls-pvc
+  namespace: faltubaat
+spec:
+  accessModes:
+    - ReadWriteMany  # Shared between RTMP and App pods
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 50Gi

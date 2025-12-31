@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # CHAT APPLICATION (Node.js)
+  # ============================================
+  chat-app:
+    build:
+      context: ../../..
+      dockerfile: deploy/docker/multi-container/Dockerfile.app
+    image: faltubaat-app:latest
+    container_name: faltubaat-app
+    ports:
+      - "3000:3000"   # HTTP
+      - "3443:3443"   # HTTPS
+    volumes:
+      - db-data:/app/data  # SQLite database persistence
+    networks:
+      - chat-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HTTPS_PORT=3443
+      - JWT_SECRET=${JWT_SECRET:-CHANGE_THIS_IN_PRODUCTION}
+      - DB_PATH=/app/data/faltubaat.db
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode < 500 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ============================================
+  # NGINX-RTMP (Streaming Server)
+  # ============================================
+  nginx-rtmp:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx-rtmp
+    image: faltubaat-nginx-rtmp:latest
+    container_name: faltubaat-nginx-rtmp
+    ports:
+      - "1935:1935"   # RTMP streaming
+      - "8080:8080"   # HLS HTTP
+    volumes:
+      - hls-data:/var/www/html/hls
+    networks:
+      - chat-network
+    restart: unless-stopped
+    depends_on:
+      chat-app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+networks:
+  chat-network:
+    driver: bridge
+
+volumes:
+  hls-data:
+    driver: local
+  db-data:
+    driver: local

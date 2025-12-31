@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: faltubaat-app-config
+  namespace: faltubaat
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  # RTMP server URL (internal service)
+  RTMP_SERVER: "rtmp://faltubaat-rtmp-service:1935/live"
+  # HLS server URL (will be replaced with actual NLB URL after deployment)
+  HLS_SERVER: "http://faltubaat-rtmp-service:8080"

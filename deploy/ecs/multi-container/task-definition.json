@@ -1,0 +1,167 @@
+{
+  "family": "faltubaat-multi",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "chat-app",
+      "image": "YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/faltubaat-app:latest",
+      "essential": true,
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "name": "http"
+        },
+        {
+          "containerPort": 3443,
+          "hostPort": 3443,
+          "protocol": "tcp",
+          "name": "https"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "HTTPS_PORT",
+          "value": "3443"
+        },
+        {
+          "name": "DB_PATH",
+          "value": "/app/data/faltubaat.db"
+        },
+        {
+          "name": "S3_DB_BUCKET",
+          "value": ""
+        },
+        {
+          "name": "S3_DB_KEY",
+          "value": "faltubaat/database/faltubaat.db"
+        },
+        {
+          "name": "S3_SYNC_ENABLED",
+          "value": "false"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:YOUR_REGION:YOUR_ACCOUNT_ID:secret:faltubaat/jwt-secret"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "app-data",
+          "containerPath": "/app/data",
+          "readOnly": false
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/faltubaat/chat-app",
+          "awslogs-region": "YOUR_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 30
+      }
+    },
+    {
+      "name": "nginx-rtmp",
+      "image": "YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/faltubaat-nginx-rtmp:latest",
+      "essential": true,
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 1935,
+          "hostPort": 1935,
+          "protocol": "tcp",
+          "name": "rtmp"
+        },
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "name": "hls"
+        }
+      ],
+      "dependsOn": [
+        {
+          "containerName": "chat-app",
+          "condition": "HEALTHY"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "hls-data",
+          "containerPath": "/var/www/html/hls",
+          "readOnly": false
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/faltubaat/nginx-rtmp",
+          "awslogs-region": "YOUR_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 10
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "app-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-XXXXXXXXX",
+        "rootDirectory": "/faltubaat/data",
+        "transitEncryption": "ENABLED"
+      }
+    },
+    {
+      "name": "hls-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-XXXXXXXXX",
+        "rootDirectory": "/faltubaat/hls",
+        "transitEncryption": "ENABLED"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "key": "Application",
+      "value": "FaltuBaat"
+    },
+    {
+      "key": "Environment",
+      "value": "production"
+    }
+  ]
+}

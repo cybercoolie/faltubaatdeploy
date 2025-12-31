@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: faltubaat-rtmp-service
+  namespace: faltubaat
+  annotations:
+    # NLB for TCP traffic (RTMP)
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  selector:
+    app: faltubaat
+    component: rtmp
+  ports:
+    - name: rtmp
+      port: 1935
+      targetPort: 1935
+      protocol: TCP
+    - name: hls
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+
+---
+# Internal service for App to access HLS
+apiVersion: v1
+kind: Service
+metadata:
+  name: faltubaat-rtmp-internal
+  namespace: faltubaat
+spec:
+  type: ClusterIP
+  selector:
+    app: faltubaat
+    component: rtmp
+  ports:
+    - name: rtmp
+      port: 1935
+      targetPort: 1935
+    - name: hls
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: faltubaat-rtmp
+  namespace: faltubaat
+  labels:
+    app: faltubaat
+    component: rtmp
+spec:
+  replicas: 1  # RTMP typically runs single instance per stream
+  selector:
+    matchLabels:
+      app: faltubaat
+      component: rtmp
+  template:
+    metadata:
+      labels:
+        app: faltubaat
+        component: rtmp
+    spec:
+      containers:
+        - name: nginx-rtmp
+          image: tiangolo/nginx-rtmp:latest  # Or your custom RTMP image
+          ports:
+            - containerPort: 1935
+              name: rtmp
+            - containerPort: 8080
+              name: hls
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: hls-volume
+              mountPath: /tmp/hls
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-rtmp-config
+        - name: hls-volume
+          persistentVolumeClaim:
+            claimName: faltubaat-hls-pvc

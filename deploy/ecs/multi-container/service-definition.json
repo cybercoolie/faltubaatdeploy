@@ -1,0 +1,65 @@
+{
+  "serviceName": "faltubaat-multi-service",
+  "cluster": "faltubaat-cluster",
+  "taskDefinition": "faltubaat-multi",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-XXXXXXXXX",
+        "subnet-YYYYYYYYY"
+      ],
+      "securityGroups": [
+        "sg-XXXXXXXXX"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:YOUR_REGION:YOUR_ACCOUNT_ID:targetgroup/faltubaat-http/XXXXXXXXX",
+      "containerName": "chat-app",
+      "containerPort": 3000
+    },
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:YOUR_REGION:YOUR_ACCOUNT_ID:targetgroup/faltubaat-hls/YYYYYYYYY",
+      "containerName": "nginx-rtmp",
+      "containerPort": 8080
+    }
+  ],
+  "healthCheckGracePeriodSeconds": 120,
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "serviceConnectConfiguration": {
+    "enabled": true,
+    "namespace": "faltubaat",
+    "services": [
+      {
+        "portName": "http",
+        "discoveryName": "chat-app",
+        "clientAliases": [
+          {
+            "port": 3000,
+            "dnsName": "chat-app"
+          }
+        ]
+      }
+    ]
+  },
+  "enableECSManagedTags": true,
+  "propagateTags": "SERVICE",
+  "tags": [
+    {
+      "key": "Application",
+      "value": "FaltuBaat"
+    }
+  ]
+}
